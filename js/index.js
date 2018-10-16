@@ -11,3 +11,4 @@ function testable(target) {
   }
   
   console.log(MyTestableClass.isTestable)// true
+  console.log('22wdaa')

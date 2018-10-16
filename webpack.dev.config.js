@@ -9,6 +9,7 @@ module.exports = {
 		index: './js/index.js', /*首页*/	
 		second:'./js/second.js', /*第二页*/
 		three: './js/three.js', /*第三页*/
+		one:'./js/one.ts'
 	},
 	devtool: 'cheap-source-map',   //开启调试模式，cheap-source-map提升打包速度和编译速度。
 	output: {
@@ -22,6 +23,12 @@ module.exports = {
 				exclude: /node_modules/,
 				// loader: 'happypack/loader?id=happyBabel',
 				use:['babel-loader','happypack/loader?id=happyBabel'],
+			},
+			{
+				test: /\.tsx?$/,
+				use:{
+					loader: 'ts-loader'
+				}
 			},
 			{
 		        test: /\.(less|css)$/,
@@ -55,7 +62,7 @@ module.exports = {
 			title: '首页',
 			filename: 'index.html',
 			template: 'ejs-render-loader!pages/index.ejs',			
-			chunks: ['index'],
+			chunks: ['index','one'],
 		}),
 		new HtmlWebpackPlugin({
 			title: '第二页',

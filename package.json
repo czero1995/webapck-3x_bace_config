@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --optimize-minimize",
-    "dev": "webpack-dev-server --config webpack.dev.config.js --open"
+    "dev": "webpack-dev-server --config webpack.dev.config.js"
   },
   "author": "",
   "license": "ISC",
@@ -35,6 +35,8 @@
     "babel-preset-env": "^1.7.0",
     "happypack": "^5.0.0",
     "html-withimg-loader": "^0.1.16",
-    "style-loader": "^0.19.0"
+    "style-loader": "^0.19.0",
+    "ts-loader": "^3.1.1",
+    "typescript": "^2.7.2"
   }
 }
