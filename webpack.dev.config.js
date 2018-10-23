@@ -6,10 +6,10 @@ const os = require('os');
 const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
 module.exports = {
 	entry: {						
-		index: './js/index.js', /*首页*/	
-		second:'./js/second.js', /*第二页*/
-		three: './js/three.js', /*第三页*/
-		one:'./js/one.ts'
+		index: './js/index.js', // 首页	
+		second:'./js/second.js', // 第二页
+		three: './js/three.js', // 第三页
+		one:'./js/one.ts', // TypeScript	
 	},
 	devtool: 'cheap-source-map',   //开启调试模式，cheap-source-map提升打包速度和编译速度。
 	output: {
@@ -21,7 +21,6 @@ module.exports = {
 			{
 				test: /\.js?$/,
 				exclude: /node_modules/,
-				// loader: 'happypack/loader?id=happyBabel',
 				use:['babel-loader','happypack/loader?id=happyBabel'],
 			},
 			{

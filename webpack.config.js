@@ -4,12 +4,15 @@ const CleanWebpackPlugin = require('clean-webpack-plugin'); /*每次编译之前
 const ExtractTextPlugin = require("extract-text-webpack-plugin"); /*提取css到为单独文件*/
 const HtmlWebpackPlugin = require('html-webpack-plugin'); /*生成html*/
 const CopyWebpackPlugin = require('copy-webpack-plugin'); /*复制文件*/
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin') /*精简输出*/
+const HappyPack = require('happypack');
+const os = require('os');
+const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
 module.exports = {
 	entry: {		
-		index: './js/index.js', /*首页*/	
-		second:'./js/second.js', /*第二页*/
-		three: './js/three.js', /*第三页*/		
+		index: './js/index.js', // 首页	
+		second:'./js/second.js', // 第二页
+		three: './js/three.js', // 第三页
+		one:'./js/one.ts', // TypeScript		
 	},
 	devtool: 'inline-source-map', 
 	output: {
@@ -17,27 +20,44 @@ module.exports = {
 		filename: "./js/[name].js", 
 	},
 	module: {
-		loaders: [{
-				test: /(\.jsx|\.js)$/,
-				use: {
-					loader: "babel-loader",
-					options: {
-						presets: [
-							"es2015"
-						]
-					}
-				},
-				exclude: /node_modules/
+		loaders: [
+			{
+				test: /\.js?$/,
+				exclude: /node_modules/,
+				use:['babel-loader','happypack/loader?id=happyBabel'],
+			},
+			{
+				test: /\.tsx?$/,
+				use:{
+					loader: 'ts-loader'
+				}
 			},
 			
 			{
-				test: /(\.less|\.css)$/,
-				use: ExtractTextPlugin.extract({
-					fallback: "style-loader",
-					use: "css-loader!less-loader!postcss-loader",
-				})
-
-			},
+                test: /\.less$/,
+                use: ExtractTextPlugin.extract({
+                    fallback: "style-loader",
+                    use: [
+                        {
+                            loader: 'css-loader',
+                            options: {
+                                importLoaders: 1
+                            }
+                        }, 
+                        {
+                            loader: 'postcss-loader',
+                            options: {
+                                plugins: (loader) => [
+                                    require('autoprefixer')({
+                                        browsers: ['last 15 versions']
+                                    })
+                                ]
+                            }
+                        },
+                        { loader: 'less-loader'}
+                    ]
+                })
+            },
 			{
 			      test: /\.ejs$/,
 			      loader: 'ejs-html-loader',			     
@@ -69,7 +89,7 @@ module.exports = {
 			title: '首页',
 			filename: 'index.html',
 			template: 'ejs-render-loader!pages/index.ejs',			
-			chunks: ['index'],
+			chunks: ['index','one'],
 			hash:true,
 			cach:true,
 			minify:{
@@ -115,8 +135,19 @@ module.exports = {
 		    from: __dirname + '/img',
 		    to:'img/'
 		}]),
-		 new UglifyJsPlugin(),
-		new CleanWebpackPlugin(['build']) //编译前先清除文件夹
+		new CleanWebpackPlugin(['build']), //编译前先清除文件夹
+		new HappyPack({
+			//用id来标识 happypack处理那里类文件
+		  id: 'happyBabel',
+		  //如何处理  用法和loader 的配置一样
+		  loaders: [{
+			loader: 'babel-loader?cacheDirectory=true',
+		  }],
+		  //共享进程池
+		  threadPool: happyThreadPool,
+		  //允许 HappyPack 输出日志
+		  verbose: true,
+		})
 	],
 
 	resolve:{		
